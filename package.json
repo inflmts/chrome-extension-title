@@ -1,0 +1,11 @@
+{
+  "name": "chrome-extension-title",
+  "description": "Change your tab titles!",
+  "version": "0.0.0",
+  "author": "Daniel Li <danielli2532@gmail.com>",
+  "private": true,
+  "devDependencies": {
+    "@types/chrome": "^0.0.129",
+    "rollup": "^2.45.2"
+  }
+}

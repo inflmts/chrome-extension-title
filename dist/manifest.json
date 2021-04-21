@@ -1,0 +1,27 @@
+{
+  "name": "Title",
+  "version": "0.0.0",
+  "description": "Change your tab titles!",
+  "manifest_version": 3,
+
+  "action": {
+    "default_title": "Title",
+    "default_popup": "popup/index.html",
+    "default_icon": {
+      "32": "assets/icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "tabs"
+  ]
+}
