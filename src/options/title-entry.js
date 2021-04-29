@@ -1,3 +1,5 @@
+import { resetTitle, setTitle } from '../storage';
+
 export default class TitleEntry {
 
   constructor(editor, key, title) {
@@ -5,36 +7,25 @@ export default class TitleEntry {
 
     // <td class="title-entry-key">
 
-    this.keyInput = document.createElement('input');
-    this.keyInput.addEventListener('focus', () => {
-      this.keyInput.select();
-    });
-    this.keyInput.addEventListener('change', () => {
-      chrome.storage.local.get('titleMap', ({ titleMap }) => {
-        const map = parseTitleMap(titleMap);
-        delete map[this.key];
-        map[this.keyInput.value] = this.titleInput.value;
-        chrome.storage.local.set({ titleMap: JSON.stringify(map) });
-      });
-    });
+    this.keyText = document.createElement('div');
+    this.keyText.innerText = key;
 
     this.keyElement = document.createElement('td');
-    this.keyElement.classList.add('title-entry-key');
-    this.keyElement.append(this.keyInput);
+    this.keyElement.classList.add('key');
+    this.keyElement.append(this.keyText);
 
     // <td class="title-entry-title">
 
     this.titleInput = document.createElement('input');
     this.titleInput.addEventListener('input', () => {
-      chrome.storage.local.get('titleMap', ({ titleMap }) => {
-        const map = parseTitleMap(titleMap);
-        map[this.key] = this.titleInput.value;
-        chrome.storage.local.set({ titleMap: JSON.stringify(map) });
+      // TODO: handle errors
+      setTitle(this.key, this.titleInput.value).catch(({ message }) => {
+        console.error(`Failed to set title for [${this.key}]: ${message}`);
       });
     });
 
     this.titleElement = document.createElement('td');
-    this.titleElement.classList.add('title-entry-title');
+    this.titleElement.classList.add('title');
     this.titleElement.append(this.titleInput);
 
     // <tr class="title-entry">
@@ -45,13 +36,8 @@ export default class TitleEntry {
 
     this.editor.element.append(this.element);
 
-    this.setKey(key);
-    this.setTitle(title);
-  }
-
-  setKey(key) {
     this.key = key;
-    this.keyInput.value = key;
+    this.setTitle(title);
   }
 
   setTitle(title) {

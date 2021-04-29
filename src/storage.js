@@ -32,6 +32,14 @@ export function getTitleMap() {
   });
 }
 
+// Returns a promise that resolves after resetting the entire title map
+// or rejects with chrome.runtime.lastError
+export function resetTitleMap() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.clear(_handler(resolve, reject));
+  });
+}
+
 // When the title of the provided key changes, call `callback` with the new title.
 export function onTitleChange(key, callback) {
   chrome.storage.onChanged.addListener((changes) => {
@@ -43,30 +51,18 @@ export function onTitleChange(key, callback) {
 // When any title changes, call `callback` with a map of changed titles.
 export function onTitleMapChange(callback) {
   chrome.storage.onChanged.addListener((changes) => {
-    const out = {};
+    const map = {};
     for (const key of Object.keys(changes))
-      out[key] = changes[key].newValue;
-    callback(out);
+      map[key] = changes[key].newValue;
+    callback(map);
   });
 }
 
-function _handler(resolve, reject, x) {
+function _handler(resolve, reject) {
   return (x) => {
     if (chrome.runtime.lastError)
       reject(chrome.runtime.lastError);
     else
       resolve(x);
   };
-}
-
-/** @deprecated */
-export function parseTitleMap(map) {
-  if (map === undefined)
-    return {};
-  if (typeof map !== 'string')
-    return (console.warn(`Invalid 'titleMap' value: Stored value is not a string:`, map), {});
-  try { map = JSON.parse(map); }
-  catch (err) { return (console.warn(`Invalid 'titleMap' value: ${err.message}`), {}); }
-  return (typeof map === 'object' && map !== null) ? map
-    : (console.warn(`Invalid 'titleMap' value: Parsed JSON is not an object:`, map), {});
 }

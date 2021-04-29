@@ -1,5 +1,5 @@
 import { getTitle, onTitleChange } from '../storage';
-import { getKey } from '../util';
+import { isString, getKey } from '../util';
 
 let override = false;
 let overrideTitle = null;
@@ -8,13 +8,15 @@ let originalTitle = document.title;
 const key = getKey(location.href);
 
 // Update title on page load.
-getTitle(key).then(updateTitle, errorHandler);
+getTitle(key).then(updateTitle, ({ message }) => {
+  console.error(`[title] Failed to get title for [${key}]: ${message}`);
+});
 
 // Update title on title change.
 onTitleChange(key, updateTitle);
 
 function updateTitle(title) {
-  if (typeof title === 'string') {
+  if (isString(title)) {
 
     if (!override) {
       override = true;
@@ -65,8 +67,4 @@ function applyOverrideTitle() {
   console.log(`[title] Applying override title: ${overrideTitle}`);
   document.title = overrideTitle;
   startObserving();
-}
-
-function errorHandler(err) {
-  console.error(err.message);
 }

@@ -6,22 +6,33 @@ const resetButton = document.getElementById('reset-button');
 const optionsButton = document.getElementById('options-button');
 const errorElement = document.getElementById('error');
 
+const UNUSABLE_KEY_ERROR = 'Only http:, https:, file:, ftp:, and urn: pages are supported.';
+
 syncFromActiveTab();
 
 inputElement.addEventListener('input', () => {
+  hideError();
   withActiveTab((tab) => {
     const key = getKey(tab.url);
-    setTitle(key, inputElement.value).catch(errorHandler);
+    if (key === null)
+      showError(UNUSABLE_KEY_ERROR);
+    else
+      setTitle(key, inputElement.value)
+        .catch(({ message }) => showError(message));
   });
 });
 
 resetButton.addEventListener('click', () => {
+  hideError();
   withActiveTab((tab) => {
     const key = getKey(tab.url);
-    resetTitle(key).then(
-      () => setTimeout(syncFromActiveTab, 100),
-      errorHandler
-    );
+    if (key === null)
+      showError(UNUSABLE_KEY_ERROR);
+    else
+      resetTitle(key).then(
+        () => setTimeout(syncFromActiveTab, 100),
+        ({ message }) => showError(message)
+      );
   });
 });
 
@@ -30,8 +41,9 @@ resetButton.addEventListener('click', () => {
 // If already in the options page, just close the popup.
 // Otherwise, open in a new tab.
 optionsButton.addEventListener('click', () => {
+  hideError();
   withActiveTab((tab) => {
-    const url = chrome.runtime.getURL('options/index.html');
+    const url = chrome.runtime.getURL('options.html');
     if (tab.url === 'chrome://newtab/')
       chrome.tabs.update(tab.id, { url }), window.close();
     else if (tab.url === url)
@@ -53,10 +65,16 @@ function withActiveTab(callback) {
 function syncFromActiveTab() {
   withActiveTab((tab) => {
     inputElement.value = tab.title;
+    inputElement.focus();
+    inputElement.select();
   });
 }
 
-function errorHandler({ message }) {
+function showError(message) {
   errorElement.hidden = false;
   errorElement.innerText = message;
+}
+
+function hideError() {
+  errorElement.hidden = true;
 }

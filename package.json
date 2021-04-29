@@ -1,16 +1,24 @@
 {
   "name": "chrome-extension-title",
   "description": "Change your tab titles!",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "Daniel Li <danielli2532@gmail.com>",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -cw"
+    "build": "run-s build:*",
+    "build:js": "rollup -c",
+    "build:css": "sass --no-source-map src/popup/main.scss:dist/build/popup.css src/options/main.scss:dist/build/options.css",
+    "watch": "run-p watch:*",
+    "watch:js": "rollup -cw",
+    "watch:css": "sass --no-source-map src/popup/main.scss:dist/build/popup.css src/options/main.scss:dist/build/options.css -w"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.129",
+    "npm-run-all": "^4.1.5",
     "rollup": "^2.45.2"
+  },
+  "optionalDependencies": {
+    "sass": "^1.32.11"
   },
   "license": "GNU GPLv3"
 }

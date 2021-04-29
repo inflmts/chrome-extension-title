@@ -3,10 +3,12 @@ import TitleEditor from './title-editor';
 
 const editor = new TitleEditor(document.querySelector('#title-map tbody'));
 
-// Update options on page load.
-getTitleMap().then((map) => editor.update(map));
+// Initialize the editor.
+getTitleMap().then((map) => editor.init(map), ({ message }) => {
+  console.error(`Failed to get title map: ${message}`);
+});
 
-// Update options when any title changes.
-onTitleMapChange((map) => editor.update(map));
+// Update the editor when any title changes.
+onTitleMapChange((changes) => editor.update(changes));
 
 window.editor = editor;

@@ -4,11 +4,20 @@
   "description": "Change your tab titles!",
   "manifest_version": 3,
 
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
   "action": {
     "default_title": "Title",
-    "default_popup": "popup/index.html",
+    "default_popup": "popup.html",
     "default_icon": {
-      "32": "assets/icon-32.png"
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
     }
   },
   "background": {
@@ -17,7 +26,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content-script.js"]
+      "js": ["build/content-script.js"]
     }
   ],
   "permissions": [
